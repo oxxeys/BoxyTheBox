@@ -1,0 +1,203 @@
+<template>
+  <div class="col-md-12 min-vh-100 mb-3">
+    <h4 style="padding-bottom: 50px;">Boxy Sightings!</h4>
+    <div class="p-3 d-flex flex-column justify-content-center align-items-center ">
+      <div class="cameraPost" :class="{ active: index === currentIndex }" v-for="(post, index) in posts"
+        :key="post._id">
+        <div style="margin-bottom: 200px;" class="box-parentPost">
+          <div class="planePost front-plane d-flex flex-column justify-content-between">
+            <p class="z-index-4 position-relative m-4 title">{{ post.title }}</p>
+            <p class="z-index-4 position-relative description">{{ post.description }}</p>
+            <p class="z-index-4 position-relative username" style="color: #fff;"> {{ post.username }}</p>
+            <button type="button" id="moreDetailsBtn" class="btn"
+              style="background-color: #E8985F; border: 1px solid black" data-bs-toggle="modal"
+              data-bs-target="#moreDetails">More Details</button>
+          </div>
+          <div class="planePost top-plane"></div>
+          <div class="planePost left-plane"></div>
+          <div class="planePost right-plane"></div>
+          <div class="planePost back-plane"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <!-- Modal - https://getbootstrap.com/docs/5.3/components/modal/#how-it-works -->
+  <div class="modal fade" id="moreDetails" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <!-- designate children content as a modal + center the modal -->
+    <div class="modal-dialog modal-dialog-centered ">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Coming Soon</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>more details coming soon!</p>
+          <p>(ps we're working on )</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" style="background-color: #E8985F; border: 1px solid black"
+            data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</template>
+
+
+<script setup>
+import { ref, onMounted } from "vue";
+import PostDataServices from "../services/PostDataServices.js";
+
+// state variables
+const posts = ref([]);
+const currentIndex = ref(-1);
+// const singlePostLocation = []
+
+// fetch all posts
+const retrievePosts = async () => {
+  try {
+    const response = await PostDataServices.getAll();
+    response.data.reverse()
+    posts.value = response.data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// fetch posts when component mounts
+onMounted(retrievePosts);
+
+
+</script>
+
+
+<style>
+:root {
+  --sizeBox: 240px;
+  --iteration: 1;
+}
+
+.list {
+  text-align: left;
+  max-width: 750px;
+  margin: auto;
+}
+
+.title {
+  font-size: x-large;
+}
+
+.description {
+  font-size: medium;
+}
+
+.username {
+  text-decoration: underline;
+  color: #fff;
+}
+
+
+/* https://dev.to/martinp/how-to-do-stunning-3d-with-pure-htmlcss-ah */
+.cameraPost {
+  width: var(--sizeBox);
+  margin: 0 auto;
+
+  position: relative;
+  perspective: 800px;
+  perspective-origin: 50% -100px;
+}
+
+
+.box-parentPost {
+  width: var(--sizeBox);
+  aspect-ratio: 1;
+
+  position: relative;
+  transform-style: preserve-3d;
+  transform-origin: calc(var(--sizeBox)/2) bottom calc(calc(var(--sizeBox)/2)*-1);
+
+  animation: rotateBox 30s alternate linear infinite;
+}
+
+
+.planePost {
+  position: absolute;
+  width: var(--sizeBox);
+  aspect-ratio: 1;
+  transform-style: preserve-3d;
+}
+
+.planePost.front-plane {
+  background-color: #e99f59;
+  padding: 10px;
+  min-height: 275px;
+  max-height: 275px;
+}
+
+
+
+.planePost.top-plane {
+  bottom: 100%;
+  transform-origin: bottom;
+  transform: rotateX(90deg);
+  background-color: #f7af6b;
+}
+
+.planePost.back-plane {
+  bottom: 200%;
+  transform-origin: center calc(var(--sizeBox)*1.5) calc(calc(var(--sizeBox)/2)*-1);
+  transform: rotateX(180deg);
+  background-color: #e6a86f;
+}
+
+.planePost.right-plane {
+  left: 100%;
+  transform-origin: left;
+  transform: rotateY(90deg);
+  background-color: #f3a761;
+  min-height: 275px;
+  max-height: 275px;
+}
+
+.planePost.left-plane {
+  right: 100%;
+  transform-origin: right;
+  transform: rotateY(-90deg);
+  background-color: #dd9552;
+}
+
+@keyframes rotateBox {
+  from {
+    transform: rotateY(-10deg);
+  }
+
+  to {
+    transform: rotateY(-20deg);
+  }
+}
+
+@media (max-width: 400px) {
+  :root {
+    --sizeBox: 150px;
+    font-size: small;
+  }
+
+  .cameraPost {
+    perspective-origin: 50% -200px;
+  }
+
+  .planePost.right-plane {
+    left: 100%;
+  }
+
+  #moreDetailsBtn {
+    display: none;
+  }
+}
+</style>
