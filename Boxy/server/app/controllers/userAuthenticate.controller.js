@@ -94,7 +94,7 @@ exports.changeUsername = async (req, res) => {
     return;
   }
 
-  await userModel.findOneAndUpdate({ username: req.session.username }, { $set: { password: req.body.username } }, { new: true })
+  await userModel.findOneAndUpdate({ username: req.session.username }, { $set: { username: req.body.username } }, { new: true })
 
   res.send({ username: req.body.username })
 
@@ -111,7 +111,7 @@ exports.changePassword = async (req, res) => {
     return;
   }
   //search db by username, when found, set password as new password
-  await userModel.findOneAndUpdate({ username: req.body.username }, { $set: { username: req.body.password } }, { new: true })
+  await userModel.findOneAndUpdate({ username: req.body.username }, { $set: { password: req.body.password } }, { new: true })
 
   res.send("password set!")
 
