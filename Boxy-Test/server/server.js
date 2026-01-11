@@ -29,7 +29,6 @@ app.use(sessions({
 const db = require("./app/models");
 
 //attempt to connect to the db - essentially just setting it up here but doing nothing with it
-require("dotenv").config();
 const mongoose = require("mongoose")
 mongoose.connect(db.url)
   .then(() => {
